@@ -20,7 +20,7 @@ Os principais pilares teóricos discutidos que sustentam este objetivo são:
 Abaixo estão os passos práticos detalhados na nossa "Pipeline PINO V3", a serem executados gradativamente:
 
 - [x] **Fase 1: Amostragem e Geração de Espaço Contínuo**
-  - Implementado o script de `Gaussian Random Fields` para simular as 5.000 texturas espaciais aleatórias (confinamentos) para a ancoragem estatística.
+  - Implementado o script de `Gaussian Random Fields` cujos parâmetros estruturais e físicos foram sorteados rigorosamente via **Latin Hypercube Sampling (LHS)**. O dataset original foi expandido offline para 40.000 amostras via Data Augmentation (simetria D4).
 - [x] **Fase 2: Arquitetura Base da Rede Neural (PINO)**
   - Implementada a arquitetura expandida multicanal (Input de 8 camadas) para absorver o GRF, Debye e as malhas numéricas absolutas ($x, z$).
 - [x] **Fase 2: Estruturação da Loss de Sobolev**
