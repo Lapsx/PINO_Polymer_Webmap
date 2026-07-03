@@ -4,12 +4,21 @@ from torch.utils.data import DataLoader, TensorDataset
 import os
 from pino_architecture import PINO_Polyelectrolyte, sobolev_physics_loss
 
-def train_pino_v3(epochs=500, batch_size=16):
+def train_pino_sobolev(epochs=100, batch_size=16):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"[*] Iniciando Treino Curriculum Fase 1 (MSE Base) no dispositivo: {device}")
+    print(f"[*] Iniciando Treino Curriculum Fase 2 (Sobolev Fine-Tuning) no dispositivo: {device}")
     
     # Inicializa a Arquitetura da V3
-    model = PINO_Polyelectrolyte(modes1=16, modes2=16, width=96, input_channels=8).to(device) # 6 canais físicos + 2 canais espaciais (x, y)
+    model = PINO_Polyelectrolyte(modes1=16, modes2=16, width=96, input_channels=8).to(device)
+    
+    # Carrega os pesos da Fase 1
+    base_weights_path = "weights/pino_v3_base_mse.pth"
+    if os.path.exists(base_weights_path):
+        model.load_state_dict(torch.load(base_weights_path))
+        print(f"[+] Pesos Base MSE carregados com sucesso de {base_weights_path}")
+    else:
+        print("[!] Erro: Rode o pino_train.py primeiro para gerar os pesos MSE!")
+        return
     
     # Carrega o Dataset Gerado e Resolvido (GRF + SCFT) [AUGMENTED D4]
     dataset_path = "data/pino_v3_dataset_augmented.pt"
@@ -32,7 +41,7 @@ def train_pino_v3(epochs=500, batch_size=16):
     for epoch in range(epochs):
         epoch_loss = 0.0
         for V_batch, params_batch, phi_batch in dataloader:
-            V_batch = V_batch.to(device) # Não precisamos de requires_grad_ para o MSE simples
+            V_batch = V_batch.to(device).requires_grad_(True) # OBRIGATÓRIO para Sobolev
             phi_batch = phi_batch.to(device)
             
             # Montar canais: [V, x, y, b, kappa, u]
@@ -49,9 +58,8 @@ def train_pino_v3(epochs=500, batch_size=16):
             # Forward
             phi_pred = model(inputs).squeeze(-1)
             
-            # Data Loss Clássica (Mean Squared Error) muito mais rápida
-            criterion = torch.nn.MSELoss()
-            loss = criterion(phi_pred, phi_batch)
+            # Physics-Informed Sobolev Loss
+            loss = sobolev_physics_loss(phi_pred, phi_batch, V_batch, model)
             
             loss.backward()
             optimizer.step()
@@ -65,8 +73,8 @@ def train_pino_v3(epochs=500, batch_size=16):
         # Treinamento real contínuo até o final das épocas
 
     os.makedirs("weights", exist_ok=True)
-    torch.save(model.state_dict(), "weights/pino_v3_base_mse.pth")
-    print("\n[+] Treino Fase 1 Finalizado! Pesos salvos em weights/pino_v3_base_mse.pth")
+    torch.save(model.state_dict(), "weights/pino_v3_sobolev_finetuned.pth")
+    print("\n[+] Treino Fase 2 Finalizado! Pesos de alta precisão física salvos em weights/pino_v3_sobolev_finetuned.pth")
 
 if __name__ == "__main__":
-    train_pino_v3(epochs=500)
+    train_pino_sobolev(epochs=100)
