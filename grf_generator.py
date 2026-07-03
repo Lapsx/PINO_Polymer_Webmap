@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from scipy.stats import qmc
 
 def generate_grf_2d(size, alpha, tau, device='cpu'):
     """
@@ -44,25 +45,34 @@ def generate_v3_dataset(num_samples=5000, grid_size=100, output_dir='data'):
     # Parâmetros físicos variando (Latin Hypercube Sampling mock)
     params = torch.zeros(num_samples, 3) # b, kappa, u
     
+    # 6 dimensões: alpha, tau, chance_parede, b, kappa, u
+    sampler = qmc.LatinHypercube(d=6)
+    lhs_sample = sampler.random(n=num_samples)
+    
+    # Mapeando os valores do hipercubo [0, 1] para os limites físicos
+    l_bounds = [2.0, 1.0, 0.0, 0.5, 0.1, -1.0]
+    u_bounds = [4.0, 10.0, 1.0, 2.0, 5.0, 1.0]
+    lhs_scaled = qmc.scale(lhs_sample, l_bounds, u_bounds)
+    
     for i in range(num_samples):
-        # Sorteia rugosidade (alpha) e correlação (tau)
-        alpha = np.random.uniform(2.0, 4.0)
-        tau = np.random.uniform(1.0, 10.0)
+        alpha = lhs_scaled[i, 0]
+        tau = lhs_scaled[i, 1]
         
         # Gera o campo de fundo
         grf = generate_grf_2d(grid_size, alpha, tau)
         
-        # Adiciona barreiras / paredes (Máscaras) aleatórias com 30% de chance
-        if np.random.rand() > 0.7:
+        # Adiciona barreiras / paredes (Máscaras) usando a variável LHS 2
+        if lhs_scaled[i, 2] > 0.7:
+            # wall_pos é um hiperparâmetro discreto aleatório extra (pode ser np random normal)
             wall_pos = np.random.randint(10, grid_size//2)
             grf[:wall_pos, :] = 10.0 # Parede infinita
             
         V_fields[i] = grf
         
         # Parâmetros Físicos
-        params[i, 0] = np.random.uniform(0.5, 2.0)   # b (Kuhn)
-        params[i, 1] = np.random.uniform(0.1, 5.0)   # kappa (Debye)
-        params[i, 2] = np.random.uniform(-1.0, 1.0)  # u (Flory-Huggins)
+        params[i, 0] = lhs_scaled[i, 3]  # b (Kuhn)
+        params[i, 1] = lhs_scaled[i, 4]  # kappa (Debye)
+        params[i, 2] = lhs_scaled[i, 5]  # u (Flory-Huggins)
         
         if (i+1) % 500 == 0:
             print(f"  -> {i+1}/{num_samples} cenários espaciais gerados.")
