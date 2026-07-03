@@ -11,8 +11,8 @@ def train_pino_v3(epochs=1000, batch_size=16):
     # Inicializa a Arquitetura da V3
     model = PINO_Polyelectrolyte(modes1=16, modes2=16, width=96, input_channels=8).to(device) # 6 canais físicos + 2 canais espaciais (x, y)
     
-    # Carrega o Dataset Gerado e Resolvido (GRF + SCFT)
-    dataset_path = "data/pino_v3_dataset_complete.pt"
+    # Carrega o Dataset Gerado e Resolvido (GRF + SCFT) [AUGMENTED D4]
+    dataset_path = "data/pino_v3_dataset_augmented.pt"
     if not os.path.exists(dataset_path):
         print("[!] Erro: Dataset não encontrado. Execute scft_solver.py primeiro.")
         return
