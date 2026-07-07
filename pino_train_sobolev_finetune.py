@@ -4,9 +4,9 @@ from torch.utils.data import DataLoader, TensorDataset
 import os
 from pino_architecture import PINO_Polyelectrolyte, sobolev_physics_loss
 
-def train_pino_sobolev(epochs=100, batch_size=16):
+def train_pino_sobolev(epochs=100, batch_size=32):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"[*] Iniciando Treino Curriculum Fase 2 (Sobolev Fine-Tuning) no dispositivo: {device}")
+    print(f"[*] Iniciando Treino Curriculum Fase 2 (Sobolev Fine-Tuning) no Kaggle: {device}")
     
     # Inicializa a Arquitetura da V3
     model = PINO_Polyelectrolyte(modes1=16, modes2=16, width=96, input_channels=8).to(device)
@@ -68,9 +68,14 @@ def train_pino_sobolev(epochs=100, batch_size=16):
         scheduler.step()
         
         if (epoch+1) % 10 == 0:
-            print(f"Época [{epoch+1}/{epochs}] - Loss: {epoch_loss/len(dataloader):.6f}")
+            print(f"Época [{epoch+1}/{epochs}] - Loss Sobolev: {epoch_loss/len(dataloader):.6f}", flush=True)
             
-        # Treinamento real contínuo até o final das épocas
+        # Sistema de Checkpoint para a Nuvem (Kaggle limit de 12 horas)
+        if (epoch+1) % 25 == 0:
+            os.makedirs("weights", exist_ok=True)
+            ckpt_path = f"weights/pino_v3_sobolev_epoch_{epoch+1}.pth"
+            torch.save(model.state_dict(), ckpt_path)
+            print(f"[!] Checkpoint de segurança salvo: {ckpt_path}", flush=True)
 
     os.makedirs("weights", exist_ok=True)
     torch.save(model.state_dict(), "weights/pino_v3_sobolev_finetuned.pth")
