@@ -24,23 +24,23 @@ Abaixo estão os passos práticos detalhados na nossa "Pipeline PINO V3", a sere
   - Implementado o script de `Gaussian Random Fields` cujos parâmetros estruturais e físicos foram sorteados rigorosamente via **Latin Hypercube Sampling (LHS)**. O dataset original foi expandido offline para 40.000 amostras via Data Augmentation (simetria D4).
 - [x] **Fase 2: Arquitetura Base da Rede Neural (PINO)**
   - Implementada a arquitetura expandida multicanal (Input de 8 camadas) para absorver o GRF, Debye e as malhas numéricas absolutas ($x, z$).
-- [x] **Fase 2: Estruturação da Loss de Sobolev**
+- [x] **Fase 3: Estruturação da Loss de Sobolev**
   - Esqueleto inicial de retropropagação e extração do Jacobiano configurado usando `torch.autograd`.
-- [x] **Fase 1: Warm-Up Ground Truth (SCFT Real)**
+- [x] **Fase 4: Warm-Up Ground Truth (SCFT Real)**
   - Rodar o Solver tradicional de SCFT nos 5.000 Campos GRFs gerados para extrair a Densidade Polimérica exata $\phi_{scft}$.
-- [x] **Fase 2: Treinamento Base (Warm-Up Model)**
+- [x] **Fase 5: Treinamento Base (Warm-Up Model)**
   - Treinar o PINO nas 5.000 amostras ancoradas focando no Erro Quadrático Médio e na Função de Perda de Sobolev por 1.000 épocas.
-- [ ] **Fase 2: Aprendizado da Física (Collocation Points)**
-  - Gerar 50.000 cenários físicos "vazios" (sem resolução no SCFT) e injetar as Equações Diferenciais na Loss para treinar a aderência às leis da termodinâmica.
-- [ ] **Fase 3: Active Learning e Amostragem Adaptativa**
-  - Criar um loop que inspeciona a variância e a falha das predições, rodando o SCFT de volta para geometrias de falha sistêmica.
-- [ ] **Fase 3: O Filtro Físico de Newton-Raphson (Pós-Inferência)**
-  - Construir o acoplamento do modelo à correção analítica clássica em tempo real para precisão absoluta.
-- [x] **Fase 4: Deploy no WebApp V3**
+- [x] **Fase 6: Deploy no WebApp V3**
   - Desenvolver a interface final com as novas predições ativas, controle de sequências de carga via Fourier e campos paramétricos customizados.
-- [ ] **Fase 3/Extensão: Treinamento de Cargas de Polímero (Diblock e Alternado)**
+- [x] **Fase 7/Extensão: Treinamento de Cargas de Polímero (Diblock e Alternado)**
   - Criação de proxies físicos (perturbações) para simular o comportamento de polímeros Diblock (C1) e Alternados (C4), e realizar o fine-tuning da rede (25 épocas).
-- [ ] **Fase 4/Extensão: Slider de Intensidade de Carga do Polímero**
+- [x] **Fase 8/Extensão: Slider de Intensidade de Carga do Polímero**
   - Refatorar o Frontend e o Dataset para treinar a PINO em valores contínuos de intensidade de carga (ex: 0.0 a 2.0), em vez de apenas um seletor booleano.
-- [ ] **Fase 5: High-Throughput Screening (HTS) no WebApp**
+- [ ] **Fase 9: Aprendizado da Física (Collocation Points)**
+  - Gerar 50.000 cenários físicos "vazios" (sem resolução no SCFT) e injetar as Equações Diferenciais na Loss para treinar a aderência às leis da termodinâmica.
+- [ ] **Fase 10: Active Learning e Amostragem Adaptativa**
+  - Criar um loop que inspeciona a variância e a falha das predições, rodando o SCFT de volta para geometrias de falha sistêmica.
+- [ ] **Fase 11: O Filtro Físico de Newton-Raphson (Pós-Inferência)**
+  - Construir o acoplamento do modelo à correção analítica clássica em tempo real para precisão absoluta.
+- [ ] **Fase 12: High-Throughput Screening (HTS) no WebApp**
   - Adicionar um botão de upload de CSV/JSON no WebApp para computar milhares de configurações num único Batch Forward Pass da PINO, retornando relatórios estatísticos da predição instantaneamente.
