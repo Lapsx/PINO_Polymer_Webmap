@@ -38,9 +38,9 @@ Abaixo estão os passos práticos detalhados na nossa "Pipeline PINO V3", a sere
   - Refatorar o Frontend e o Dataset para treinar a PINO em valores contínuos de intensidade de carga (ex: 0.0 a 2.0), em vez de apenas um seletor booleano.
 - [X] **Fase 9: Aprendizado da Física (Collocation Points)**
   - Gerar 50.000 cenários físicos "vazios" (sem resolução no SCFT) e injetar as Equações Diferenciais na Loss para treinar a aderência às leis da termodinâmica.
-- [ ] **Fase 10: Active Learning e Amostragem Adaptativa**
-  - Criar um loop que inspeciona a variância e a falha das predições, rodando o SCFT de volta para geometrias de falha sistêmica.
-- [ ] **Fase 11: O Filtro Físico de Newton-Raphson (Pós-Inferência)**
+- [X] **Fase 10: O Filtro Físico de Newton-Raphson (Pós-Inferência)**
   - Construir o acoplamento do modelo à correção analítica clássica em tempo real para precisão absoluta.
+- [ ] **Fase 11: Active Learning e Amostragem Adaptativa**
+  - Criar um loop que inspeciona a variância e a falha das predições, rodando o SCFT de volta para geometrias de falha sistêmica.
 - [ ] **Fase 12: High-Throughput Screening (HTS) no WebApp**
   - Adicionar um botão de upload de CSV/JSON no WebApp para computar milhares de configurações num único Batch Forward Pass da PINO, retornando relatórios estatísticos da predição instantaneamente.
