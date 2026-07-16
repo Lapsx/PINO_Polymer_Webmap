@@ -36,10 +36,10 @@ Abaixo estão os passos práticos detalhados na nossa "Pipeline PINO V3", a sere
   - Criação de proxies físicos (perturbações) para simular o comportamento de polímeros Diblock (C1) e Alternados (C4), e realizar o fine-tuning da rede (25 épocas).
 - [x] **Fase 8/Extensão: Slider de Intensidade de Carga do Polímero**
   - Refatorar o Frontend e o Dataset para treinar a PINO em valores contínuos de intensidade de carga (ex: 0.0 a 2.0), em vez de apenas um seletor booleano.
-- [X] **Fase 9: Aprendizado da Física (Collocation Points)**
-  - Gerar 50.000 cenários físicos "vazios" (sem resolução no SCFT) e injetar as Equações Diferenciais na Loss para treinar a aderência às leis da termodinâmica.
-- [X] **Fase 10: O Filtro Físico de Newton-Raphson (Pós-Inferência)**
-  - Construir o acoplamento do modelo à correção analítica clássica em tempo real para precisão absoluta.
+- [X] **Fase 9: O Filtro Físico de Newton-Raphson (Pós-Inferência)**
+  - Construir o acoplamento do modelo à correção analítica clássica em tempo real para melhor precisão.
+- [/] **Fase 10: Aprendizado da Física (Collocation Points)**
+  - Gerar 50.000 cenários físicos "vazios" (sem resolução no SCFT) e injetar as Equações Diferenciais na Loss para treinar a aderência à termodinâmica do sistema.
 - [ ] **Fase 11: Active Learning e Amostragem Adaptativa**
   - Criar um loop que inspeciona a variância e a falha das predições, rodando o SCFT de volta para geometrias de falha sistêmica.
 - [ ] **Fase 12: High-Throughput Screening (HTS) no WebApp**
